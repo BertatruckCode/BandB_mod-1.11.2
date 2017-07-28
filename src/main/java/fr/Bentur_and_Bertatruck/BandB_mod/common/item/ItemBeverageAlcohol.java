@@ -1,15 +1,14 @@
 package fr.Bentur_and_Bertatruck.BandB_mod.common.item;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 public class ItemBeverageAlcohol extends ItemBeverage {
@@ -21,25 +20,35 @@ public class ItemBeverageAlcohol extends ItemBeverage {
 		itemDrop = this.getBottleEmpty();
 	}
 
-	public ItemStack onItemUseFinish(ItemStack item, World world, EntityPlayer player) {
-		if (!player.capabilities.isCreativeMode) {
-			item.shrink(1);
-		}
+	public ItemStack onItemUseFinish(ItemStack stack, World world, EntityLivingBase entityLiving) {
+		System.out.println("pus soif");
+		System.out.println(itemDrop.getUnlocalizedName());
+		
+        EntityPlayer entityplayer = entityLiving instanceof EntityPlayer ? (EntityPlayer)entityLiving : null;
+
+        if (entityplayer == null || !entityplayer.capabilities.isCreativeMode){
+            stack.shrink(1);
+        }
 
 		if (!world.isRemote) {
-			player.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 100, 1));
-			player.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 200, 1));
-			player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 500, 2));
+			entityLiving.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 100, 1));
+			entityLiving.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 200, 1));
+			entityLiving.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 500, 2));
 
 		}
-		if (!(this.playerHasItemDrop(player)>-1) && player.inventory.getFirstEmptyStack() == -1) {
-			EntityItem entityItem = new EntityItem(world, player.posX, player.posY + 1, player.posZ, new ItemStack(itemDrop, 1));
-			if (!world.isRemote)
-				world.spawnEntity(entityItem);
-		} else
-			player.inventory.addItemStackToInventory(new ItemStack(itemDrop));
+		if (entityplayer == null || !entityplayer.capabilities.isCreativeMode){
+            if (stack.isEmpty())
+            {
+                return new ItemStack(itemDrop);
+            }
+
+            if (entityplayer != null)
+            {
+                entityplayer.inventory.addItemStackToInventory(new ItemStack(itemDrop));
+            }
+        }
 		
-		return item;
+		return stack;
 	}
 
 	public int getMaxItemUseDuration(ItemStack item) {
