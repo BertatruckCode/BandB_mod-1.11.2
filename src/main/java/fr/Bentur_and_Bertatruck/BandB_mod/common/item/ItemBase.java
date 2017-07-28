@@ -6,7 +6,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class ItemBase extends Item{
 	
 	public ItemBase(String name){
-		setRegistryName(name);		
+		this.setUnlocalizedName(name);
+		this.setRegistryName(name);		
 		GameRegistry.register(this);	
 	}
 
